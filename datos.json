@@ -1,0 +1,51 @@
+[
+  {
+    "nombre": "Elmer",
+    "especie": "Perro",
+    "edad": 12,
+    "alergeno": "Sin alergia",
+    "resultado": "ACEPTADO: Se encontraron opciones de alimentos compatibles."
+  },
+  {
+    "nombre": "Elmer",
+    "especie": "Perro",
+    "edad": 12,
+    "alergeno": "Sin alergia",
+    "resultado": "ACEPTADO | Opción recomendada: Josera Festival (Receta completa para perro)"
+  },
+  {
+    "nombre": "Elmer",
+    "especie": "Perro",
+    "edad": 12,
+    "alergeno": "Carne",
+    "resultado": "ACEPTADO | Opción recomendada: Josera Salmon & Potato (Libre de carne de res)"
+  },
+  {
+    "nombre": "Rommy",
+    "especie": "Otra especie",
+    "edad": 12,
+    "alergeno": "Carne",
+    "resultado": "RECHAZADO: Especie no soportada. El sistema solo evalúa perros y gatos."
+  },
+  {
+    "nombre": "Elmer",
+    "especie": "Otra especie",
+    "edad": "N/A",
+    "alergeno": "N/A",
+    "resultado": "RECHAZADO: Especie no soportada. El sistema solo evalúa perros y gatos."
+  },
+  {
+    "nombre": "Elmer",
+    "especie": "Perro",
+    "edad": 23,
+    "alergeno": "Sin alergia",
+    "resultado": "ERROR: Dato inválido. La edad debe estar entre 1 y 25 años."
+  },
+  {
+    "nombre": "Elmer",
+    "especie": "Perro",
+    "edad": 23,
+    "alergeno": "N/A",
+    "resultado": "ERROR: Dato inválido. La edad debe estar entre 1 y 19 años."
+  }
+]

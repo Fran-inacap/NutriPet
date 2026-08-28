@@ -1,0 +1,17 @@
+# Entorno y variables secretas (¡MÁS IMPORTANTE!)
+.env
+
+# Entorno virtual de Python
+.venv/
+venv/
+env/
+
+# Archivos compilados y caché de Python
+__pycache__/
+*.pyc
+
+# Archivos generados por VS Code
+.vscode/
+
+# Base de datos SQLite por defecto de Django (si aplica)
+*.sqlite3
