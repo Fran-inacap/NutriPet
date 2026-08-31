@@ -65,7 +65,7 @@ def main():
             edad = -1 # Fuerza el dato inválido si ingresan letras/texto
             
         # NUEVO: Si la edad es inválida (<= 0 o >= 20), interrumpe el flujo aquí
-        if edad <= 0 or edad >= 20:
+        if edad <= 0 or edad > 20:
             alergeno = "N/A"
             resultado = decidir(especie, edad, "Sin alergia")
         else:

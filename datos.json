@@ -47,5 +47,12 @@
     "edad": 23,
     "alergeno": "N/A",
     "resultado": "ERROR: Dato inválido. La edad debe estar entre 1 y 19 años."
+  },
+  {
+    "nombre": "Guaren",
+    "especie": "Perro",
+    "edad": 5,
+    "alergeno": "Pollo",
+    "resultado": "RECHAZADO: Sin stock de alimentos compatibles libres de pollo."
   }
 ]
