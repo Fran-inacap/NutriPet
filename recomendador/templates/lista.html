@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>NutriPet - Historial de Registros</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f9f9f9; }
+        h1 { color: #2b6cb0; }
+        table { width: 100%; border-collapse: collapse; background: #fff; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #2b6cb0; color: white; }
+        .btn { padding: 6px 12px; text-decoration: none; border-radius: 4px; color: white; margin-right: 5px; }
+        .btn-add { background-color: #38a169; display: inline-block; margin-bottom: 15px; }
+        .btn-edit { background-color: #d69e2e; }
+        .btn-del { background-color: #e53e3e; }
+    </style>
+</head>
+<body>
+    <h1>NutriPet - Historial de Recomendaciones Nutricionales</h1>
+    <a href="{% url 'crear' %}" class="btn btn-add">+ Crear Nuevo Registro</a>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Mascota</th>
+                <th>Especie</th>
+                <th>Edad</th>
+                <th>Alérgeno</th>
+                <th>Resultado de Recomendación</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in registros %}
+            <tr>
+                <td><strong>{{ r.nombre }}</strong></td>
+                <td>{{ r.get_especie_display }}</td>
+                <td>{{ r.edad }} años</td>
+                <td>{{ r.alergeno|default:"Ninguno" }}</td>
+                <td>{{ r.resultado }}</td>
+                <td>{{ r.fecha|date:"Y-m-d H:i" }}</td>
+                <td>
+                    <a href="{% url 'editar' r.pk %}" class="btn btn-edit">Editar</a>
+                    <a href="{% url 'eliminar' r.pk %}" class="btn btn-del">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No hay registros cargados aún.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

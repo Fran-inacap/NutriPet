@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar Eliminación - NutriPet</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f9f9f9; }
+        .card { background: white; padding: 20px; border-radius: 8px; width: 400px; }
+        .btn-danger { background: #e53e3e; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>¿Confirmar eliminación?</h2>
+        <p>¿Estás seguro de que deseas eliminar la ficha de <strong>{{ registro.nombre }}</strong>?</p>
+        <p><em>(El registro se ocultará del sistema sin ser borrado físicamente).</em></p>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger">Sí, Eliminar</button>
+            <a href="{% url 'lista' %}" style="margin-left:10px;">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html>
