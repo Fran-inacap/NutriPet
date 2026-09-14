@@ -16,7 +16,14 @@
     </style>
 </head>
 <body>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
     <h1>NutriPet - Historial de Recomendaciones Nutricionales</h1>
+    <div>
+        <span>Hola, <strong>{{ user.username }}</strong></span> | 
+        <a href="{% url 'logout' %}" style="color: red;">Cerrar Sesión</a>
+    </div>
+</div>
+    
     <a href="{% url 'crear' %}" class="btn btn-add">+ Crear Nuevo Registro</a>
     
     <table>

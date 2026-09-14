@@ -1,18 +1,55 @@
-from django.shortcuts import render
-
-# Create your views here.
-import json
+from functools import wraps
 from django.shortcuts import render, redirect, get_object_or_404
-from solucion import decidir  # Regla de decision de la ES1 intacta
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from solucion import decidir  # Regla de decision intacta
 from .models import Registro
 
+# --- DECORADOR DE ROLES EN SERVIDOR ---
+def tiene_rol(user, *roles):
+    return user.groups.filter(name__in=roles).exists() or user.is_superuser
+
+def requiere_rol(*roles):
+    def decorador(view_func):
+        @wraps(view_func)
+        @login_required(login_url="login")
+        def wrapper(request, *args, **kwargs):
+            if tiene_rol(request.user, *roles):
+                return view_func(request, *args, **kwargs)
+            messages.error(request, "No tienes permiso para realizar esta acción.")
+            return redirect("lista")
+        return wrapper
+    return decorador
+
+
+# --- VISTAS DE AUTENTICACIÓN ---
+def vista_login(request):
+    if request.method == "POST":
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("lista")
+        messages.error(request, "Usuario o contraseña incorrectos.")
+    return render(request, "login.html")
+
+def vista_logout(request):
+    logout(request)
+    return redirect("login")
+
+
+# --- VISTAS PROTEGIDAS CON DECORADOR DE ROL ---
+@login_required(login_url="login")
 def lista(request):
-    """READ: Muestra los registros que no han sido borrados logicamente."""
+    """READ: Permitido para todos los usuarios autenticados."""
     registros = Registro.objects.filter(eliminado=False)
     return render(request, "lista.html", {"registros": registros})
 
+@requiere_rol("admin", "normal")
 def crear(request):
-    """CREATE: Procesa el formulario, aplica decidir() y guarda en la BD."""
+    """CREATE: Permitido para roles 'admin' y 'normal'."""
     error = None
     if request.method == "POST":
         nombre = request.POST.get("nombre", "").strip()
@@ -24,7 +61,6 @@ def crear(request):
             if not nombre or not especie:
                 error = "El nombre y la especie son campos obligatorios."
             else:
-                # Reutilizacion directa de la regla de decision
                 resultado = decidir(especie, edad, alergeno)
                 Registro.objects.create(
                     nombre=nombre,
@@ -39,8 +75,9 @@ def crear(request):
 
     return render(request, "form.html", {"accion": "Crear", "error": error})
 
+@requiere_rol("admin")
 def editar(request, pk):
-    """UPDATE: Modifica un registro y RECALCULA la regla de decision."""
+    """UPDATE: Exclusivo para rol 'admin'."""
     reg = get_object_or_404(Registro, pk=pk, eliminado=False)
     error = None
 
@@ -58,7 +95,6 @@ def editar(request, pk):
                 reg.especie = especie
                 reg.edad = edad
                 reg.alergeno = alergeno
-                # Recalcular el resultado con decidir() para evitar datos inconsistentes
                 reg.resultado = decidir(especie, edad, alergeno)
                 reg.save()
                 return redirect("lista")
@@ -67,8 +103,9 @@ def editar(request, pk):
 
     return render(request, "form.html", {"accion": "Editar", "registro": reg, "error": error})
 
+@requiere_rol("admin")
 def eliminar(request, pk):
-    """DELETE: Realiza el borrado logico del registro."""
+    """DELETE: Exclusivo para rol 'admin'."""
     reg = get_object_or_404(Registro, pk=pk, eliminado=False)
     if request.method == "POST":
         reg.soft_delete()

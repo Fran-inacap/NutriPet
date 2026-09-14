@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - NutriPet</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 320px; }
+        h2 { text-align: center; color: #2b6cb0; margin-bottom: 20px; }
+        .field { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .btn { width: 100%; padding: 10px; background: #2b6cb0; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .msg { color: red; margin-bottom: 15px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>NutriPet - Acceso</h2>
+        {% if messages %}
+            {% for m in messages %}
+                <div class="msg">{{ m }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="field">
+                <label>Usuario:</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="field">
+                <label>Contraseña:</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Ingresar</button>
+        </form>
+    </div>
+</body>
+</html>
