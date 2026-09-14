@@ -8,20 +8,27 @@ Muchos dueños de mascotas enfrentan dificultades para encontrar un alimento ade
 ### Solución
 Una aplicación backend en Python que evalúa la especie, edad y alérgeno seleccionado mediante interfaz de menús para determinar la factibilidad de recomendación y entregar opciones de alimento seguras.
 
-### Alcance
-* **Dentro del alcance:** Selección de 1 mascota a la vez, validación de datos de entrada mediante menú/formulario, aplicación de regla de decisión de 4 resultados, almacenamiento persistente en `datos.json` y despliegue web en Django.
-* **Fuera del alcance:** Cuentas de usuario, autenticación/login, historial de compras, pasarelas de pago e integración con APIs externas.
+# Plan de Desarrollo — NutriPet (Evaluación 2)
 
-### Priorización MoSCoW
-* **Must (MVP):**
-  * Solicitar por consola datos de la mascota: nombre, especie, edad y alérgeno.
-  * Ejecutar la regla de decisión con los 4 resultados especificados.
-  * Guardar los registros evaluados dentro de `datos.json`.
-  * Mostrar el historial estructurado en consola utilizando `tabulate`.
-  * Visualizar la tabla de registros en una vista web con Django.
-* **Should:** Opción para vaciar o reiniciar el archivo de registros `datos.json`.
-* **Could:** Exportar la tabla de recomendaciones acumuladas a formato CSV.
-* **Won't:** Cuentas de usuario con contraseña
+## Alcance del Proyecto (Matriz MoSCoW)
+
+### Must Have (Obligatorio - Implementado)
+- **Base de Datos Relacional:** Migración de `datos.json` a SQLite mediante el modelo `Registro`.
+- **Lógica Reutilizada:** Conservación de la regla de decisión `decidir()` intacta desde `solucion.py`.
+- **Operaciones CRUD:** Implementación de vistas para listar, crear, editar (recalculando resultado) y eliminar.
+- **Borrado Lógico:** Implementación del campo `eliminado` y `fecha_eliminacion` para preservar el historial.
+- **Autenticación y Roles:** Sistema de login/logout y control de acceso basado en grupos (`admin`, `normal`, `viewer`) mediante decorador custom en el servidor.
+- **Panel de Administración:** Configuración de `list_display`, `list_filter` y `search_fields` en Django Admin.
+
+### Should Have (Deseable)
+- Interfaz web estilizada mediante CSS nativo para formularios y mensajes de alerta.
+
+### Could Have (Posible en el futuro)
+- Exportación del historial en archivos PDF o Excel.
+
+### Won't Have (Fuera de alcance)
+- Registro público de usuarios (los usuarios son gestionados por el administrador)[cite: 3].
+- Integración con bases de datos en la nube (PostgreSQL/MySQL).
 
 ---
 

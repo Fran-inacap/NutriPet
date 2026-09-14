@@ -18,3 +18,18 @@ En el desarrollo del proyecto **NutriPet**, se utilizó un modelo de Inteligenci
 * **Ajuste de Rango de Edad:** Se ajustó la regla de decisión para que la edad permitida sea estrictamente de 1 a 20 años, marcando `> 20` como dato inválido.
 * **Inclusión de Productos Específicos:** Se personalizó la respuesta del caso Aceptado para incluir productos reales de la marca **Josera** según la especie y alérgeno.
 * **Manejo de Errores en JSON:** Se implementó un bloque `try/except` para prevenir caídas de lectura si `datos.json` se encuentra vacío o malformado.
+
+# Registro de Uso de Inteligencia Artificial — NutriPet (Evaluación 2)
+
+## Herramientas Utilizadas
+- **IA Generativa / Asistente:** Gemini / ChatGPT (Modelo de asistencia técnica backend)[cite: 3].
+
+## Prompts y Consultas Clave
+1. *"¿Cómo estructurar el modelo Django con borrado lógico para reemplazar datos.json?"*[cite: 3]
+2. *"¿Cómo implementar las vistas CRUD reutilizando la función decidir() de solucion.py sin duplicar código?"*[cite: 3]
+3. *"¿Cómo proteger las vistas en Django usando un decorador personalizado que valide grupos de usuarios en el servidor?"*[cite: 3]
+
+## Correcciones Aplicadas sobre las Respuestas de la IA
+1. **Seguridad en la plantilla vs. Servidor:** Inicialmente la IA sugirió ocultar botones con `{% if %}` en el HTML, pero se corrigió para forzar la validación estricta a nivel de servidor con el decorador `@requiere_rol`[cite: 3].
+2. **Reorganización del Modelo:** La IA sugirió crear un modelo de roles personalizado, pero se corrigió para utilizar la solución nativa de Django con `django.contrib.auth.models.Group`[cite: 3].
+3. **Manejo de Tipos en Migración:** El script de migración inicial fallaba con valores `'N/A'`, por lo que se ajustó el manejo de excepciones `try/except` al convertir enteros[cite: 3].
