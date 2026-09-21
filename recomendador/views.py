@@ -47,9 +47,14 @@ def lista(request):
     registros = Registro.objects.filter(eliminado=False)
     return render(request, "lista.html", {"registros": registros})
 
+# recomendador/views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Registro
+from solucion import decidir
+
 @requiere_rol("admin", "normal")
 def crear(request):
-    """CREATE: Permitido para roles 'admin' y 'normal'."""
     error = None
     if request.method == "POST":
         nombre = request.POST.get("nombre", "").strip()
@@ -58,10 +63,15 @@ def crear(request):
         
         try:
             edad = int(request.POST.get("edad", ""))
-            if not nombre or not especie:
-                error = "El nombre y la especie son campos obligatorios."
+            
+            # 1. Evaluamos la regla
+            resultado = decidir(especie, edad, alergeno)
+            
+            # 2. VALIDACIÓN: Si devolver un error, NO guardamos en la base de datos
+            if resultado.startswith("ERROR"):
+                error = resultado  # Muestra el mensaje "ERROR: Dato inválido..." en el HTML
             else:
-                resultado = decidir(especie, edad, alergeno)
+                # Solo guardamos si no hubo error
                 Registro.objects.create(
                     nombre=nombre,
                     especie=especie,
@@ -70,17 +80,28 @@ def crear(request):
                     resultado=resultado
                 )
                 return redirect("lista")
+                
         except ValueError:
             error = "La edad debe ser un número entero válido."
 
-    return render(request, "form.html", {"accion": "Crear", "error": error})
+    return render(request, "form.html", {
+        "accion": "Crear", 
+        "error": error,
+        # Devolvemos los datos ingresados para que el usuario no tenga que reescribirlos
+        "registro": {
+            "nombre": request.POST.get("nombre", ""),
+            "especie": request.POST.get("especie", ""),
+            "edad": request.POST.get("edad", ""),
+            "alergeno": request.POST.get("alergeno", "")
+        } if request.method == "POST" else None
+    })
+
 
 @requiere_rol("admin")
 def editar(request, pk):
-    """UPDATE: Exclusivo para rol 'admin'."""
     reg = get_object_or_404(Registro, pk=pk, eliminado=False)
     error = None
-
+    
     if request.method == "POST":
         nombre = request.POST.get("nombre", "").strip()
         especie = request.POST.get("especie", "").strip()
@@ -88,20 +109,31 @@ def editar(request, pk):
         
         try:
             edad = int(request.POST.get("edad", ""))
-            if not nombre or not especie:
-                error = "El nombre y la especie son campos obligatorios."
+            
+            # Evaluamos la regla con los nuevos datos
+            resultado = decidir(especie, edad, alergeno)
+            
+            # VALIDACIÓN EN EDICIÓN
+            if resultado.startswith("ERROR"):
+                error = resultado
             else:
+                # Actualizamos el objeto solo si los datos son válidos
                 reg.nombre = nombre
                 reg.especie = especie
                 reg.edad = edad
                 reg.alergeno = alergeno
-                reg.resultado = decidir(especie, edad, alergeno)
+                reg.resultado = resultado
                 reg.save()
                 return redirect("lista")
+                
         except ValueError:
             error = "La edad debe ser un número entero válido."
 
-    return render(request, "form.html", {"accion": "Editar", "registro": reg, "error": error})
+    return render(request, "form.html", {
+        "accion": "Editar", 
+        "error": error, 
+        "registro": reg
+    })
 
 @requiere_rol("admin")
 def eliminar(request, pk):

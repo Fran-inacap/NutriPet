@@ -1,35 +1,46 @@
 # Informe de Uso de Inteligencia Artificial - NutriPet
 
 ## 1. Declaración de Uso
-En el desarrollo del proyecto **NutriPet**, se utilizó un modelo de Inteligencia Artificial (Gemini) como asistente de desarrollo para la estructuración de la lógica de negocio, refactorización de código en Python y diseño de componentes en Django.
+En el desarrollo del proyecto **NutriPet**, se utilizó Inteligencia Artificial (Gemini / ChatGPT) como asistente técnico para la estructuración de la lógica de negocio, refactorización de código en Python y diseño de componentes en Django.
 
-## 2. Prompts Clave Utilizados
+---
 
-### Prompt 1: Diseño del Plan de Negocio y Regla de Decisión
-> *"Ayúdame a diseñar la regla de decisión en Python para evaluar recomendaciones de alimentos de mascotas con 4 resultados posibles: dato inválido (edad <= 0 o > 20), rechazo 1 (especie no soportada), rechazo 2 (sin stock para el alérgeno) y aceptado (con stock compatible). Debe guardar en JSON y mostrarse con tabulate."*
+## 2. Auditoría de Interacciones y Correcciones Aplicadas
 
-### Prompt 2: Refactorización del Flujo de Interrupción
-> *"En el código de consola, quiero que el programa interrumpa la toma de datos inmediatamente si la especie seleccionada es 'Otra especie' o si la edad es un dato inválido, registrando el resultado en datos.json sin pedir los siguientes campos."*
+### Interacción 1: Seguridad y Protección de Vistas
+* **Consulta (Prompt):**
+  > "¿Cómo proteger las vistas en Django usando un decorador personalizado que valide grupos de usuarios en el servidor y cómo ocultar los botones de Editar/Eliminar en la plantilla HTML?"
+* **Respuesta de la IA:**
+  Sugirió validar únicamente en la plantilla HTML con directivas `{% if request.user.is_staff %}` para ocultar las opciones de edición y eliminación según el perfil.
+* **Corrección y Justificación Técnica:**
+  Se rechazó la validación exclusiva en la plantilla porque un usuario no autorizado podía eludirla ingresando directamente la URL `/editar/1/`. Se implementó el decorador personalizado `@requiere_rol("admin")` en `views.py` para forzar la validación estricta a nivel de servidor.
 
-### Prompt 3: Integración con Django
-> *"Necesito crear una vista simple en Django que lea el archivo datos.json y renderice una tabla HTML limpia con el historial de evaluaciones en la ruta /resumen/."*
+---
 
-## 3. Validación y Ajustes Realizados por el Desarrollador
-* **Ajuste de Rango de Edad:** Se ajustó la regla de decisión para que la edad permitida sea estrictamente de 1 a 20 años, marcando `> 20` como dato inválido.
-* **Inclusión de Productos Específicos:** Se personalizó la respuesta del caso Aceptado para incluir productos reales de la marca **Josera** según la especie y alérgeno.
-* **Manejo de Errores en JSON:** Se implementó un bloque `try/except` para prevenir caídas de lectura si `datos.json` se encuentra vacío o malformado.
+### Interacción 2: Modelo de Usuarios y Gestión de Roles
+* **Consulta (Prompt):**
+  > "¿Cómo estructurar el modelo Django para manejar roles de usuario y permisos sin complicar la arquitectura?"
+* **Respuesta de la IA:**
+  Sugirió crear un modelo de roles personalizado extendiendo `AbstractUser` o con una relación `OneToOneField`.
+* **Corrección y Justificación Técnica:**
+  Se simplificó la arquitectura rechazando el modelo personalizado e implementando la solución nativa de Django mediante `django.contrib.auth.models.Group` ("admin" y "normal"), garantizando mantenibilidad y menor sobrecarga.
 
-# Registro de Uso de Inteligencia Artificial — NutriPet (Evaluación 2)
+---
 
-## Herramientas Utilizadas
-- **IA Generativa / Asistente:** Gemini / ChatGPT (Modelo de asistencia técnica backend)[cite: 3].
+### Interacción 3: Normalización de Datos en Migración (`cargar_datos.py`)
+* **Consulta (Prompt):**
+  > "¿Cómo migrar el historial previo de `datos.json` al modelo Django usando un script de carga automatizado?"
+* **Respuesta de la IA:**
+  Entregó un script que insertaba directamente las cadenas del JSON a la base de datos sin transformación previa.
+* **Corrección y Justificación Técnica:**
+  El script inicial fallaba al convertir enteros cuando encontraba valores `'N/A'` o textos inconsistentes como `"Otra especie"`, impidiendo que los registros se pudieran editar en `/admin/`. Se agregaron las funciones `mapear_especie()` y `mapear_alergeno()` con manejo de excepciones `try/except` para limpiar los campos y sincronizarlos con los `choices` del modelo Django.
 
-## Prompts y Consultas Clave
-1. *"¿Cómo estructurar el modelo Django con borrado lógico para reemplazar datos.json?"*[cite: 3]
-2. *"¿Cómo implementar las vistas CRUD reutilizando la función decidir() de solucion.py sin duplicar código?"*[cite: 3]
-3. *"¿Cómo proteger las vistas en Django usando un decorador personalizado que valide grupos de usuarios en el servidor?"*[cite: 3]
+---
 
-## Correcciones Aplicadas sobre las Respuestas de la IA
-1. **Seguridad en la plantilla vs. Servidor:** Inicialmente la IA sugirió ocultar botones con `{% if %}` en el HTML, pero se corrigió para forzar la validación estricta a nivel de servidor con el decorador `@requiere_rol`[cite: 3].
-2. **Reorganización del Modelo:** La IA sugirió crear un modelo de roles personalizado, pero se corrigió para utilizar la solución nativa de Django con `django.contrib.auth.models.Group`[cite: 3].
-3. **Manejo de Tipos en Migración:** El script de migración inicial fallaba con valores `'N/A'`, por lo que se ajustó el manejo de excepciones `try/except` al convertir enteros[cite: 3].
+### Interacción 4: Estructura del Formulario y Campo Alérgeno
+* **Consulta (Prompt):**
+  > "¿Cómo capturar el alérgeno en `form.html` sin usar ModelForm pero asegurando que coincida con el motor de reglas?"
+* **Respuesta de la IA:**
+  Sugirió un campo `<input type="text" name="alergeno">` de texto libre.
+* **Corrección y Justificación Técnica:**
+  Se reemplazó el `input` por un menú desplegable `<select>` con las 4 opciones normalizadas (`ninguno`, `pollo`, `carne`, `trigo`) para evitar que diferencias tipográficas o de capitalización corrompieran la evaluación en `solucion.py`.

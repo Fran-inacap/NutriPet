@@ -6,7 +6,9 @@
 Muchos dueños de mascotas enfrentan dificultades para encontrar un alimento adecuado cuando sus mascotas tienen sensibilidades o alergias alimentarias. La búsqueda a ciegas provoca gastos elevados en consultas veterinarias y sacos de alimento descartados al causar malestar digestivo o cutáneo en la mascota.
 
 ### Solución
-Una aplicación backend en Python que evalúa la especie, edad y alérgeno seleccionado mediante interfaz de menús para determinar la factibilidad de recomendación y entregar opciones de alimento seguras.
+Una aplicación web en Django que evalúa la especie, edad y alérgeno seleccionado para determinar la factibilidad de recomendación y entregar opciones de alimento seguras de la línea Josera.
+
+---
 
 # Plan de Desarrollo — NutriPet (Evaluación 2)
 
@@ -14,20 +16,20 @@ Una aplicación backend en Python que evalúa la especie, edad y alérgeno selec
 
 ### Must Have (Obligatorio - Implementado)
 - **Base de Datos Relacional:** Migración de `datos.json` a SQLite mediante el modelo `Registro`.
-- **Lógica Reutilizada:** Conservación de la regla de decisión `decidir()` intacta desde `solucion.py`.
-- **Operaciones CRUD:** Implementación de vistas para listar, crear, editar (recalculando resultado) y eliminar.
-- **Borrado Lógico:** Implementación del campo `eliminado` y `fecha_eliminacion` para preservar el historial.
-- **Autenticación y Roles:** Sistema de login/logout y control de acceso basado en grupos (`admin`, `normal`, `viewer`) mediante decorador custom en el servidor.
-- **Panel de Administración:** Configuración de `list_display`, `list_filter` y `search_fields` en Django Admin.
+- **Lógica Reutilizada:** Conservación del motor de reglas `decidir()` en `solucion.py`.
+- **Operaciones CRUD:** Vistas para listar, crear, editar (recalculando el resultado) y eliminar.
+- **Borrado Lógico:** Uso del campo `eliminado` para preservar la integridad del historial.
+- **Autenticación y Roles:** Sistema de autenticación con control de acceso por grupos (`admin` y `normal`) mediante el decorador personalizado `@requiere_rol` a nivel de servidor.
+- **Panel de Administración:** Configuración de `list_display`, `list_filter` y `search_fields` en Django Admin con mapeo de choices compatible.
 
-### Should Have (Deseable)
-- Interfaz web estilizada mediante CSS nativo para formularios y mensajes de alerta.
+### Should Have (Deseable - Implementado)
+- Interfaz web estilizada con CSS para formularios, mensajes de alerta y tablas.
 
 ### Could Have (Posible en el futuro)
-- Exportación del historial en archivos PDF o Excel.
+- Exportación del historial a archivos PDF o Excel.
 
 ### Won't Have (Fuera de alcance)
-- Registro público de usuarios (los usuarios son gestionados por el administrador)[cite: 3].
+- Registro público de usuarios (los usuarios son creados y gestionados directamente por el administrador).
 - Integración con bases de datos en la nube (PostgreSQL/MySQL).
 
 ---
@@ -36,19 +38,17 @@ Una aplicación backend en Python que evalúa la especie, edad y alérgeno selec
 
 ### Datos de Entrada
 * **nombre** (`str`): Nombre de la mascota.
-* **especie** (`str`): Opción seleccionada ("Perro", "Gato", "Otra especie").
-* **edad** (`int`): Edad en años o meses de la mascota.
-* **alergeno** (`str`): Opción seleccionada ("Pollo", "Carne", "Trigo", "Sin alergia").
+* **especie** (`str`): Opción seleccionada (`"perro"`, `"gato"`, `"otra"`).
+* **edad** (`int`): Edad en años de la mascota (rango válido: 1 a 20).
+* **alergeno** (`str`): Opción seleccionada (`"ninguno"`, `"pollo"`, `"carne"`, `"trigo"`).
 
 ### Regla de Decisión (4 Resultados)
-1. **Dato Inválido:** Si `edad <= 0` o `edad > 20`.
-2. **Rechazo 1 (Especie no soportada):** Si `especie` es igual a "Otra especie". Inicialmente solo se soportará perro y gato.
-3. **Rechazo 2 (Sin alimento que no posea  el alérgeno):** Si `alergeno` es igual a "Pollo" (no existen alternativas de alimento disponibles libres de pollo).
-4. **Aceptado:** Si `especie` es "Perro" o "Gato", `edad > 0` y el `alergeno` cuenta con stock compatible ("Carne", "Trigo" o "Sin alergia").
+1. **Dato Inválido:** Si `edad <= 0` o `edad > 20`. Las vistas impiden guardar estos registros en la base de datos.
+2. **Rechazo 1 (Especie no soportada):** Si `especie` es igual a `"otra"`. Solo se soportan perros y gatos.
+3. **Rechazo 2 (Sin stock para alérgeno):** Si `alergeno` es `"pollo"` (no hay stock de alimentos hipoalergénicos libres de pollo).
+4. **Aceptado:** Si `especie` es `"perro"` o `"gato"`, `edad` está en el rango válido y el `alergeno` es `"carne"`, `"trigo"` o `"ninguno"`.
 
-### Paquete Externo
-* **tabulate:** Paquete instalado vía `pip` que permite formatear y presentar la lista de diccionarios en consola con formato de tabla legible.
-
-### Pantalla Web
-* **Ruta:** `/resumen/`
-* **Contenido:** Una vista de Django (`resumen.html`) que lee el archivo `datos.json` y despliega la tabla con las evaluaciones realizadas (nombre, especie, edad, alérgeno y resultado del sistema).
+#### Pantalla Web Principal
+* **Ruta:** `/registros/`
+* **Vista / Plantilla:** `lista.html` (Vista protegida `lista` en `recomendador/views.py`).
+* **Contenido:** Despliega la tabla interactiva con el historial de evaluaciones leídas desde la base de datos (nombre, especie, edad, alérgeno y resultado del sistema), aplicando el control de acceso y opciones según el rol del usuario autenticado.
