@@ -9,27 +9,27 @@ def decidir(especie, edad, alergeno):
         return "ERROR: Dato inválido. La edad debe estar entre 1 y 20 años."
     
     # Paso 2: Rechazo 1 (Especie no soportada)
-    elif especie == "Otra especie":
+    elif especie == "otra especie":
         return "RECHAZADO: Especie no soportada. El sistema solo evalúa perros y gatos."
     
     # Paso 3: Rechazo 2 (Sin alimento para el alérgeno)
-    elif alergeno == "Pollo":
+    elif alergeno == "pollo":
         return "RECHAZADO: Sin stock de alimentos compatibles libres de pollo."
     
     # Paso 4: Aceptado (Recomendaciones de marca Josera)
-    elif especie in ["Perro", "Gato"] and alergeno in ["Carne", "Trigo", "Sin alergia"]:
-        if especie == "Perro":
-            if alergeno == "Carne":
+    elif especie in ["perro", "gato"] and alergeno in ["carne", "trigo", "sin alergia"]:
+        if especie == "perro":
+            if alergeno == "carne":
                 return "ACEPTADO | Opción recomendada: Josera Salmon & Potato (Libre de carne de res)"
-            elif alergeno == "Trigo":
+            elif alergeno == "trigo":
                 return "ACEPTADO | Opción recomendada: Josera SensiAdult / Josera Optiness (Grain-Free, sin trigo)"
             else:
                 return "ACEPTADO | Opción recomendada: Josera Festival (Receta completa para perro)"
         
-        elif especie == "Gato":
-            if alergeno == "Carne":
+        elif especie == "gato":
+            if alergeno == "carne":
                 return "ACEPTADO | Opción recomendada: Josera Marinesse (Con salmón, libre de carne de res)"
-            elif alergeno == "Trigo":
+            elif alergeno == "trigo":
                 return "ACEPTADO | Opción recomendada: Josera NatureCat (100% libre de granos y trigo)"
             else:
                 return "ACEPTADO | Opción recomendada: Josera DailyCat (Receta equilibrada para gato)"
