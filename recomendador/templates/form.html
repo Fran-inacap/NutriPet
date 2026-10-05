@@ -5,42 +5,56 @@
     <title>{{ accion }} Registro - NutriPet</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 30px; background-color: #f9f9f9; }
-        .card { background: white; padding: 20px; border-radius: 8px; width: 400px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .card { background: white; padding: 20px; border-radius: 8px; width: 400px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin: auto; }
         .field { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
-        .error { color: red; margin-bottom: 15px; }
-        .btn { padding: 8px 15px; background: #2b6cb0; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .error { color: #d9534f; background-color: #f2dede; border: 1px solid #ebccd1; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
+        .btn { padding: 10px 15px; background: #2b6cb0; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background: #2c5282; }
         a { color: #666; text-decoration: none; margin-left: 10px; }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>{{ accion }} Registro de Mascota</h2>
-        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+        
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
         
         <form method="POST">
             {% csrf_token %}
+            
             <div class="field">
-                <label>Nombre de la Mascota:</label>
-                <input type="text" name="nombre" value="{{ registro.nombre|default:'' }}" required>
+                <label for="nombre">Nombre de la Mascota:</label>
+                <input type="text" id="nombre" name="nombre" value="{{ registro.nombre|default:'' }}" required placeholder="Ej: Cachupín">
             </div>
+
             <div class="field">
-                <label>Especie:</label>
-                <select name="especie" required>
-                    <option value="perro" {% if registro.especie == 'perro' %}selected{% endif %}>Perro</option>
+                <label for="especie">Especie:</label>
+                <select id="especie" name="especie" required>
+                    <option value="perro" {% if registro.especie == 'perro' or not registro %}selected{% endif %}>Perro</option>
                     <option value="gato" {% if registro.especie == 'gato' %}selected{% endif %}>Gato</option>
                     <option value="otra" {% if registro.especie == 'otra' %}selected{% endif %}>Otra especie</option>
                 </select>
             </div>
+
             <div class="field">
-                <label>Edad (Años):</label>
-                <input type="number" name="edad" value="{{ registro.edad|default:'' }}" required>
+                <label for="edad">Edad (Años):</label>
+                <input type="number" id="edad" name="edad" min="0" max="30" value="{{ registro.edad|default:'' }}" required placeholder="Ej: 3">
             </div>
+
             <div class="field">
-                <label>Alérgeno (opcional):</label>
-                <input type="text" name="alergeno" value="{{ registro.alergeno|default:'' }}">
+                <label for="alergeno">Alérgeno conocido:</label>
+                <select id="alergeno" name="alergeno">
+                    <option value="ninguno" {% if registro.alergeno == 'ninguno' or not registro %}selected{% endif %}>Ninguno / Sin restricciones</option>
+                    <option value="pollo" {% if registro.alergeno == 'pollo' %}selected{% endif %}>Pollo</option>
+                    <option value="carne" {% if registro.alergeno == 'carne' %}selected{% endif %}>Carne de Res</option>
+                    <option value="trigo" {% if registro.alergeno == 'trigo' %}selected{% endif %}>Trigo</option>
+                </select>
             </div>
+
             <button type="submit" class="btn">Guardar y Evaluar</button>
             <a href="{% url 'lista' %}">Cancelar</a>
         </form>
